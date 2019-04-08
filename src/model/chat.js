@@ -2,7 +2,9 @@ const PostgresUtil = require('../utils/PostgresUtil')
 const Likes = require('./likes.js')
 
 async function createMessageTable() {
-  //await Likes.createLikesTable()
+  // Call the function from the likes.js to create a likes table
+  // NOTE: For some reason I had to comment this out so the message table would get created
+  await Likes.createLikesTable()
   
   return await PostgresUtil.pool.query(`CREATE TABLE messages (
     id          SERIAL PRIMARY KEY,
@@ -37,6 +39,8 @@ async function createMessage(handle, data) {
 async function getMessages() {
   try {
     const result = await PostgresUtil.pool.query(
+      // Provided sql
+      // Note: like_query had to be used instead
       `SELECT * FROM messages 
       LEFT JOIN (
         SELECT message_id, COUNT(*) AS like_count FROM likes GROUP BY message_id
