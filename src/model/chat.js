@@ -2,7 +2,7 @@ const PostgresUtil = require('../utils/PostgresUtil')
 const Likes = require('./likes.js')
 
 async function createMessageTable() {
-  await Likes.createLikesTable()
+  //await Likes.createLikesTable()
   
   return await PostgresUtil.pool.query(`CREATE TABLE messages (
     id          SERIAL PRIMARY KEY,
