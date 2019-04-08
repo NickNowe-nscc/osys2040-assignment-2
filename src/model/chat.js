@@ -2,8 +2,8 @@ const PostgresUtil = require('../utils/PostgresUtil')
 const Likes = require('./likes.js')
 
 async function createMessageTable() {
-  await Likes.createLikesTable()   //create a like table 不知道怎么用
-
+  await Likes.createLikesTable()
+  
   return await PostgresUtil.pool.query(`CREATE TABLE messages (
     id          SERIAL PRIMARY KEY,
     created_at  TIMESTAMP DEFAULT NOW(),
@@ -37,25 +37,14 @@ async function createMessage(handle, data) {
 async function getMessages() {
   try {
     const result = await PostgresUtil.pool.query(
-      `
-        SELECT * FROM messages 
-        left join (
-          select messageId, count(*) as like_count 
-          from likes 
-          group by messageId
-        ) like_query
-        on messages.id = like_query.messageId
-      `)
-
-      // select * from messages
-      // left join (
-      //     select messageid, count(*) as like.count from likes group by messageid)
-      //     on messages.id = messageid
-     
+      `SELECT * FROM messages 
+      LEFT JOIN (
+        SELECT message_id, COUNT(*) AS like_count FROM likes GROUP BY message_id
+      ) like_query 
+      ON messages.id = like_query.message_id`)
 
     return result.rows
   } catch (exception) {
-    console.log(exception)
     if (exception.code === '42P01') {
       // 42P01 - table is missing - we'll create it and try again
       await createMessageTable()
